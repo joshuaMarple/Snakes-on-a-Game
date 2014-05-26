@@ -1,0 +1,39 @@
+#:kivy 1.0.9         
+
+<Background>:
+    canvas.before:
+        Rectangle:
+            source: 'media/darkPurple.png'
+            size: self.parent.size
+
+
+<Player>:
+    health: 20
+    size: 50,50
+    vel_x: 0
+    vel_y: 0
+    canvas:
+        Rectangle:
+            source: 'media/player.png'
+            pos:self.pos
+            size:self.size
+
+<PongGame>:
+    
+    player: player
+
+    Background:
+        center: root.center
+        size: self.parent.width, self.parent.height
+
+    Label:
+        font_size: 12  
+        center_x: root.width / 12
+        top: root.top
+        text: "health: " + str(root.player.health)
+    
+
+    
+    Player: 
+        id: player
+        center: self.parent.center
