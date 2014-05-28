@@ -56,6 +56,20 @@ class PongGame(Widget):
 
     def update(self, dt):
         # secCounter = 0
+        if self.player.x < 0:
+            self.player.x = 0
+            self.player.vel_x = 0
+        if self.player.right > self.parent.width:
+            self.player.right = self.parent.width
+            self.player.vel_x = 0
+        if self.player.top > self.parent.height:
+            self.player.top = self.parent.height
+            self.player.vel_y = 0
+        if self.player.y < 0:
+            self.player.y = 0
+            self.player.vel_y = 0
+
+
         self.player.center_x += self.player.vel_x
         self.player.center_y += self.player.vel_y
 
