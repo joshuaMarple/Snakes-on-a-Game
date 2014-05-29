@@ -1,5 +1,12 @@
 #:kivy 1.0.9         
 
+<Obstacle>:
+    name: self.name
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
 <Background>:
     canvas.before:
         Rectangle:
@@ -18,13 +25,25 @@
             pos:self.pos
             size:self.size
 
-<PongGame>:
+<Game>:
+    obstacle1: obstacle1
+    obstacle2: obstacle2
     
     player: player
 
     Background:
         center: root.center
         size: self.parent.width, self.parent.height
+
+    Obstacle:
+        id: obstacle1
+        pos: self.parent.center_x-5, 0
+        size: 10, self.parent.height / 2
+
+    Obstacle:
+        id: obstacle2
+        pos: self.parent.center_x + 25, 50
+        size: 10, 10
 
     Label:
         font_size: 12  
@@ -36,4 +55,4 @@
     
     Player: 
         id: player
-        center: self.parent.center
+        center: self.parent.width/2 , self.parent.height * 3/4
