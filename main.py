@@ -6,6 +6,9 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 
 
+class Baddie(Widget):
+    name = "baddie"
+
 class Obstacle(Widget):
     name = "obstacle"
 
@@ -15,11 +18,12 @@ class Background(Widget):
     pass
 
 class Player(Widget):
+    baddieTimer = 0
     health = NumericProperty(0)
 
     #for when he takes damage
     #pain should be a number
-    def hurt(pain):
+    def hurt(self, pain):
         self.health -= pain
 
 class Game(Widget):
@@ -58,7 +62,10 @@ class Game(Widget):
         return True
 
     def update(self, dt):
-        
+        #update the baddie timer
+        if self.player.baddieTimer > 0:
+            self.player.baddieTimer -= 1
+
         #no escaping!
         if self.player.x < 0:
             self.player.x = 0
@@ -95,12 +102,29 @@ class Game(Widget):
             except AttributeError:
                 pass
 
+        #check to see if he collides with baddies
+        for i in self.children:
+            try:
+                #test if its colliding
+                if self.player.collide_widget(i) and i.name == "baddie":
+                    if self.player.baddieTimer == 0: #prevents him from getting damaged so quick
+                        self.player.hurt(1)
+                        self.player.baddieTimer = 120
+                    new_x = self.player.center_x #try resetting the x value
+                    self.player.center_x = prev_x
+                    if self.player.collide_widget(i) and i.name== "baddie":
+                        self.player.center_y = prev_y #well, since it wasn't the x value, lets try y
+                        self.player.center_x = new_x
+                        if self.player.collide_widget(i) and i.name== "baddie":
+                            self.player.center_x = prev_x #holy shit, still colliding? must be both then
+            except AttributeError:
+                pass
 
 class testApp(App):
     def build(self):
         game = Game()
         Clock.schedule_interval(game.update, 1.0 / 60.0)
         return game
-        
+
 if __name__ == '__main__':
     testApp().run()

@@ -1,4 +1,12 @@
-#:kivy 1.0.9         
+#:kivy 1.0.9  
+
+<Baddie>:
+    name: self.name
+    canvas:
+        Ellipse:
+            source: 'media/spinner.png'
+            pos: self.pos
+            size: self.size       
 
 <Obstacle>:
     name: self.name
@@ -28,6 +36,7 @@
 <Game>:
     obstacle1: obstacle1
     obstacle2: obstacle2
+
     
     player: player
 
@@ -44,6 +53,10 @@
         id: obstacle2
         pos: self.parent.center_x + 25, 50
         size: 10, 10
+
+    Baddie:
+        pos: self.parent.height, 0
+        size: 75, 75
 
     Label:
         font_size: 12  
