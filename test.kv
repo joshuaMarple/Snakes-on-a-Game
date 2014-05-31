@@ -1,5 +1,14 @@
 #:kivy 1.0.9  
 
+<Magic>:
+    x_comp: self.x_comp
+    y_comp: self.y_comp
+    name: self.name
+    canvas:
+        Ellipse
+            pos: self.pos
+            size: self.size
+
 <Baddie>:
     name: self.name
     canvas:
@@ -36,6 +45,7 @@
 <Game>:
     obstacle1: obstacle1
     obstacle2: obstacle2
+    on_touch_down: root.fireMagic()
 
     
     player: player
