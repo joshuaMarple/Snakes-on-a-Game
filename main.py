@@ -7,37 +7,14 @@ from kivy.core.window import Window
 from kivy.core.image import Image, Texture
 from kivy.graphics.instructions import Canvas
 from kivy.graphics import Rectangle
+
+from Player import Player
+from Magic import Magic
+
 import math
 #see this space here? see how there's no global state? keep it that way.
 #global functions are ok, so long as they don't add state
 
-class Magic(Widget):
-    name = "magic"
-    remove = False
-    vel_x = 2
-    vel_y = 2
-    x_comp = NumericProperty(0)
-    y_comp = NumericProperty(0)
-
-    def update(self, widgets, parent_width, parent_height):
-        self.x += self.x_comp * self.vel_x
-        self.y += self.y_comp * self.vel_y
-
-        if self.x < 0:
-            self.remove = True
-        if self.right > parent_width:
-            self.remove = True
-        if self.top > parent_height:
-            self.remove = True
-        if self.y < 0:
-            self.remove = True
-        for i in widgets:
-            try:
-                #test if its colliding
-                if self.collide_widget(i) and i.name == "obstacle":
-                    self.remove = True 
-            except AttributeError:
-                pass
 
 class Baddie(Widget):
     name = "baddie"
@@ -50,79 +27,7 @@ class Background(Widget):
     #has to have a class, or else kivy throws a fit
     pass
 
-class Player(Widget):
-    baddieTimer = 0
-    health = NumericProperty(0)
 
-    def update(self, widgets, parent_width, parent_height):
-
-         #no escaping!
-        if self.x < 0:
-            self.x = 0
-            self.vel_x = 0
-        if self.right > parent_width:
-            self.right = parent_width
-            self.vel_x = 0
-        if self.top > parent_height:
-            self.top = parent_height
-            self.vel_y = 0
-        if self.y < 0:
-            self.y = 0
-            self.vel_y = 0
-        #update the baddie timer
-        if self.baddieTimer > 0:
-            self.baddieTimer -= 1
-
-        #so he can actually move
-        #velocity makes for a much smoother movement than just incrementing position
-        prev_x = self.center_x
-        prev_y = self.center_y
-        self.center_x += self.vel_x
-        self.center_y += self.vel_y
-
-        for i in widgets:
-            try:
-                #test if its colliding
-                if self.collide_widget(i) and i.name == "obstacle":
-                    new_x = self.center_x #try resetting the x value
-                    self.center_x = prev_x
-                    if self.collide_widget(i) and i.name== "obstacle":
-                        self.center_y = prev_y #well, since it wasn't the x value, lets try y
-                        self.center_x = new_x
-                        if self.collide_widget(i) and i.name== "obstacle":
-                            self.center_x = prev_x #holy shit, still colliding? must be both then
-            except AttributeError:
-                pass
-
-        #check to see if player collides with baddies
-        for i in widgets:
-            try:
-                #test if its colliding
-                if self.collide_widget(i) and i.name == "baddie":
-                    if self.baddieTimer == 0: #prevents him from getting damaged so quick
-
-                        #I cannot change his fucking image for anything. No clue why, and internet is no help
-
-                        # print(self.source)
-                        # new_texture = Image('media/p1_hurt.png').texture
-                        # with self.canvas:
-                        #     self.Rectangle = Rectangle(texture=new_texture, pos=self.pos, size=self.size)
-                        self.hurt(1)
-                        self.baddieTimer = 120
-                    new_x = self.center_x #try resetting the x value
-                    self.center_x = prev_x
-                    if self.collide_widget(i) and i.name== "baddie":
-                        self.center_y = prev_y #well, since it wasn't the x value, lets try y
-                        self.center_x = new_x
-                        if self.collide_widget(i) and i.name== "baddie":
-                            self.center_x = prev_x #holy shit, still colliding? must be both then
-            except AttributeError:
-                pass
-
-    #for when he takes damage
-    #pain should be a number
-    def hurt(self, pain):
-        self.health -= pain
 
 class Game(Widget):
 
@@ -144,7 +49,7 @@ class Game(Widget):
         r = math.asin((target_x - self.player.center_x)/hyp)
         x = math.sin(r)
         y = math.cos(r)
-        if target_y - self.player.y < 0: 
+        if target_y - self.player.y < 0: #makes sure it goes in the right direction, screws up for some reason if i do the x axis too
             y *= -1
         self.add_widget(Magic(pos = self.player.pos, size = (25, 25), x_comp = x, y_comp = y))
 
@@ -185,7 +90,6 @@ class Game(Widget):
                     self.remove_widget(i)
                 #test if its colliding
                 if i.name == "magic":
-                    print "found magic"
                     i.update(self.children, self.width, self.height)
             except AttributeError:
                 pass
