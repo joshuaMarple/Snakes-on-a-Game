@@ -13,6 +13,7 @@ import math
 
 class Magic(Widget):
     name = "magic"
+    remove = False
     vel_x = 2
     vel_y = 2
     x_comp = NumericProperty(0)
@@ -23,40 +24,18 @@ class Magic(Widget):
         self.y += self.y_comp * self.vel_y
 
         if self.x < 0:
-            self.x = 0
-            self.vel_x *= -1
+            self.remove = True
         if self.right > parent_width:
-            self.right = parent_width
-            self.vel_x *= -1
+            self.remove = True
         if self.top > parent_height:
-            self.top = parent_height
-            self.vel_y *= -1
+            self.remove = True
         if self.y < 0:
-            self.y = 0
-            self.vel_y *= -1
-
-        #so he can actually move
-        #velocity makes for a much smoother movement than just incrementing position
-        prev_x = self.center_x
-        prev_y = self.center_y
-        # self.center_x += self.vel_x
-        # self.center_y += self.vel_y
-
+            self.remove = True
         for i in widgets:
             try:
                 #test if its colliding
                 if self.collide_widget(i) and i.name == "obstacle":
-                    new_x = self.center_x #try resetting the x value
-                    self.center_x = prev_x
-                    self.vel_x *= -1
-                    if self.collide_widget(i) and i.name== "obstacle":
-                        self.center_y = prev_y #well, since it wasn't the x value, lets try y
-                        self.vel_x *= -1
-                        self.vel_y *= -1
-                        self.center_x = new_x
-                        if self.collide_widget(i) and i.name== "obstacle":
-                            self.center_x = prev_x #holy shit, still colliding? must be both then
-                            self.vel_x *= -1
+                    self.remove = True 
             except AttributeError:
                 pass
 
@@ -202,8 +181,11 @@ class Game(Widget):
         self.player.update(self.children, self.width, self.height)
         for i in self.children:
             try:
+                if i.remove == True:
+                    self.remove_widget(i)
                 #test if its colliding
                 if i.name == "magic":
+                    print "found magic"
                     i.update(self.children, self.width, self.height)
             except AttributeError:
                 pass
