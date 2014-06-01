@@ -73,6 +73,60 @@ def generate():
                 if k.isIn(j, i) and k.fill == True:
                     map[i][j] = "@"
 
+    #Paint in the corridors
+    min_tree = spanning_tree(rooms)
+    for edge in min_tree:
+        print edge
+        direction = edge.get_direction()
+        if(direction == NN):
+            print "!!! North !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1]):
+                map[i][edge.curr.center[0]] = " "
+
+        if(direction == WW):
+            print "!!! East !!!"
+            for i in range(edge.curr.center[0], edge.next.center[0]):
+                map[edge.curr.center[1]][i] = " "
+
+        if(direction == SS):
+            print "!!! South !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1]):
+                map[i][edge.curr.center[0]] = " "
+
+        if(direction == EE):
+            print "!!! West !!!"
+            for i in range(edge.next.center[0], edge.curr.center[0]):
+                map[edge.curr.center[1]][i] = " "
+
+        if(direction == NW):
+            print "!!! Northwest !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1] - 1):
+                map[i - 1][edge.curr.center[0]] = " "
+            for i in range(edge.next.center[0], edge.curr.center[0] - 1):
+                map[edge.curr.center[1]][i - 1] = " "
+
+        if(direction == NE):
+            print "!!! Northeast !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1] - 1):
+                map[i + 1][edge.curr.center[0]] = " "
+            for i in range(edge.curr.center[0], edge.next.center[0] - 1):
+                map[edge.curr.center[1]][i - 1] = " "
+
+        if(direction == SW):
+            print "!!! Southwest !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1] - 1):
+                map[i - 1][edge.curr.center[0]] = " "
+            for i in range(edge.next.center[0], edge.curr.center[0] - 1):
+                map[edge.curr.center[1]][i + 1] = " "
+
+        if(direction == SE):
+            print "!!! Southeast !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1] - 1):
+                map[i + 1][edge.curr.center[0]] = " "
+            for i in range(edge.curr.center[0], edge.next.center[0] - 1):
+                map[edge.curr.center[1]][i - 1] = " "
+
+
     print("num x girders: ", num_x_girders)
     print("num y girders: " , num_y_girders)
     print("x_girders: ", x_girders)
@@ -82,5 +136,35 @@ def generate():
         for j in i:
             print(j),
         print
+
+def spanning_tree(rooms):
+    spanning_tree = []
+    edges = []
+    placed_edges = []
+    has_visited = []
+    for room in rooms:
+        room.has_visited = False
+    start = rooms[0]
+    new_edges = start.get_edges(rooms)
+    start.has_visited = True
+    edges = edges + new_edges
+    while(len(edges) != 0):
+        min_length = sys.maxsize
+        min_edge = None
+        min_pos = -1
+        for edge in edges:
+            if(edge.next.has_visited):
+                edges.remove(edge)
+                continue
+            if(edge.get_distance() < min_length):
+                min_edge = edge
+                min_length = edge.get_distance()
+        if(min_edge != None):
+            edges.remove(min_edge)
+            min_edge.next.has_visited = True
+            new_edges = min_edge.next.get_edges(rooms)
+            edges = edges + new_edges
+            spanning_tree.append(min_edge)
+    return spanning_tree
 
 generate()
