@@ -31,14 +31,14 @@ def generate():
 
     x_girders.sort()
     y_girders.sort()
-    print(x_girders)
-    print(y_girders)
+    # print(x_girders)
+    # print(y_girders)
 
     for i in range(0, len(x_girders) - 1):
         room = []
         for j in range(0, len(y_girders) - 1):
             # print "test", i, j
-            print([x_girders[i],y_girders[j]])
+            # print([x_girders[i],y_girders[j]])
             rooms.append(DungeonRoom(x_girders[i], y_girders[j], x_girders[i+1], y_girders[j+1]))
 
     for i in range(0,height):
@@ -54,22 +54,62 @@ def generate():
     # for i in map:
     #     for j in i:
 
-    print("num x girders: ", num_x_girders)
-    print("num y girders: " , num_y_girders)
-    print("x_girders: ", x_girders)
-    print("y_girders: ", y_girders)
-    y_pos = 0
-    print("", end="   ")
-    for i in range(0, len(map[0])):
-        print(i % 10, end=" ")
-    print("", end="\n")
-    print("", end="\n")
-    for i in map:
-        print(y_pos % 10, end="  ")
-        for j in i:
-            print(j, end=" ")
-        print("", end="\n")
-        y_pos += 1
+    print("!! --- All Rooms --- !!")
     for room in rooms:
         print(room)
+
+    print("!! --- Spanning Tree --- !!")
+    s_trr = spanning_tree(rooms)
+    for room in s_trr:
+        print(room)
+
+    # print("num x girders: ", num_x_girders)
+    # print("num y girders: " , num_y_girders)
+    # print("x_girders: ", x_girders)
+    # print("y_girders: ", y_girders)
+    # y_pos = 0
+    # print("", end="   ")
+    # for i in range(0, len(map[0])):
+    #     print(i % 10, end=" ")
+    # print("", end="\n")
+    # print("", end="\n")
+    # for i in map:
+    #     print(y_pos % 10, end="  ")
+    #     for j in i:
+    #         print(j, end=" ")
+    #     print("", end="\n")
+    #     y_pos += 1
+    # for room in rooms:
+    #     print(room)
+
+def spanning_tree(rooms):
+    spanning_tree = []
+    edges = []
+    placed_edges = []
+    has_visited = []
+    for room in rooms:
+        room.has_visited = False
+    start = rooms[0]
+    new_edges = start.get_edges(rooms)
+    start.has_visited = True
+    edges = edges + new_edges
+    while(len(edges) != 0):
+        min_length = sys.maxsize
+        min_edge = None
+        min_pos = -1
+        for edge in edges:
+            if(edge.next.has_visited):
+                edges.remove(edge)
+                continue
+            if(edge.get_distance() < min_length):
+                min_edge = edge
+                min_length = edge.get_distance()
+        if(min_edge != None):
+            edges.remove(min_edge)
+            min_edge.next.has_visited = True
+            new_edges = min_edge.next.get_edges(rooms)
+            edges = edges + new_edges
+            spanning_tree.append(min_edge)
+    return spanning_tree
+
 generate()
