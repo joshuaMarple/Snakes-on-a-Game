@@ -1,5 +1,5 @@
 from random import *
-
+from dungeon_room import *
 def generate():
     map = []
     width = randint(4,16)
@@ -31,16 +31,15 @@ def generate():
 
     x_girders.sort()
     y_girders.sort()
-    print x_girders
-    print y_girders
+    print(x_girders)
+    print(y_girders)
 
     for i in range(0, len(x_girders) - 1):
         room = []
         for j in range(0, len(y_girders) - 1):
             # print "test", i, j
-            print [x_girders[i],y_girders[j]]
-            rooms.append([[x_girders[i], y_girders[j]],[x_girders[i+1], y_girders[j+1]]])
-        # rooms.append(room)
+            print([x_girders[i],y_girders[j]])
+            rooms.append(DungeonRoom(x_girders[i], y_girders[j], x_girders[i+1], y_girders[j+1]))
 
     for i in range(0,height):
         tmp_map = []
@@ -55,13 +54,22 @@ def generate():
     # for i in map:
     #     for j in i:
 
-    print "num x girders: ", num_x_girders
-    print "num y girders: " , num_y_girders
-    print "x_girders: ", x_girders
-    print "y_girders: ", y_girders
+    print("num x girders: ", num_x_girders)
+    print("num y girders: " , num_y_girders)
+    print("x_girders: ", x_girders)
+    print("y_girders: ", y_girders)
+    y_pos = 0
+    print("", end="   ")
+    for i in range(0, len(map[0])):
+        print(i % 10, end=" ")
+    print("", end="\n")
+    print("", end="\n")
     for i in map:
+        print(y_pos % 10, end="  ")
         for j in i:
-            print(j),
-        print
-    print rooms
+            print(j, end=" ")
+        print("", end="\n")
+        y_pos += 1
+    for room in rooms:
+        print(room)
 generate()
