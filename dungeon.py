@@ -2,8 +2,8 @@ from random import *
 from dungeon_room import *
 def generate():
     map = []
-    width = randint(4,16)
-    height = randint(4,16)
+    width = randint(4,64)
+    height = randint(4,64)
     min_room_size = 4
     max_room_size = width
     num_x_girders = randint(1,width)
@@ -15,6 +15,7 @@ def generate():
 
     rooms = []
 
+    #generate the columns of the walls
     for i in range(0, num_x_girders):
         if last_room_x + min_room_size < width:
             x = randint(last_room_x + min_room_size, width)
@@ -22,6 +23,7 @@ def generate():
                 x_girders.append(x)
                 last_room_x = x
 
+    #generate the rows of the walls
     for i in range(0, num_y_girders):
         if last_room_y + min_room_size < height:
             y = randint(last_room_y + min_room_size, height)
@@ -34,6 +36,7 @@ def generate():
     # print(x_girders)
     # print(y_girders)
 
+    #calculate each of the rooms, make them an object
     for i in range(0, len(x_girders) - 1):
         room = []
         for j in range(0, len(y_girders) - 1):
@@ -41,44 +44,99 @@ def generate():
             # print([x_girders[i],y_girders[j]])
             rooms.append(DungeonRoom(x_girders[i], y_girders[j], x_girders[i+1], y_girders[j+1]))
 
+    #decide which rooms to fill in
+    for i in rooms:
+        if random() < 0.5: #arbitrary, can be changed
+            i.fill = True
+
+    #generate the map
     for i in range(0,height):
         tmp_map = []
         for j in range(0,width):
             if j in x_girders or i in y_girders:
                 tmp_map.append("@")
             else:
-                tmp_map.append("#")
+                tmp_map.append(" ")
         map.append(tmp_map)
 
+    #fill in the rooms
+    for i in range(0, height):
+        for j in range(0, width):
+            for k in rooms:
+                if k.isIn(j, i) and k.fill == True:
+                    map[i][j] = "@"
 
-    # for i in map:
-    #     for j in i:
+    #Paint in the corridors
+    min_tree = spanning_tree(rooms)
+    for edge in min_tree:
+        print edge
+        direction = edge.get_direction()
+        if(direction == NN):
+            print "!!! North !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1]):
+                map[i][edge.curr.center[0]] = " "
 
-    print("!! --- All Rooms --- !!")
-    for room in rooms:
-        print(room)
+        if(direction == WW):
+            print "!!! East !!!"
+            for i in range(edge.curr.center[0], edge.next.center[0]):
+                map[edge.curr.center[1]][i] = " "
 
-    print("!! --- Spanning Tree --- !!")
-    s_trr = spanning_tree(rooms)
-    for room in s_trr:
-        print(room)
+        if(direction == SS):
+            print "!!! South !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1]):
+                map[i][edge.curr.center[0]] = " "
 
-    # print("num x girders: ", num_x_girders)
-    # print("num y girders: " , num_y_girders)
-    # print("x_girders: ", x_girders)
-    # print("y_girders: ", y_girders)
-    # y_pos = 0
-    # print("", end="   ")
+        if(direction == EE):
+            print "!!! West !!!"
+            for i in range(edge.next.center[0], edge.curr.center[0]):
+                map[edge.curr.center[1]][i] = " "
+
+        if(direction == NW):
+            print "!!! Northwest !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1] - 1):
+                map[i - 1][edge.curr.center[0]] = " "
+            for i in range(edge.next.center[0], edge.curr.center[0] - 1):
+                map[edge.curr.center[1]][i - 1] = " "
+
+        if(direction == NE):
+            print "!!! Northeast !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1] - 1):
+                map[i + 1][edge.curr.center[0]] = " "
+            for i in range(edge.curr.center[0], edge.next.center[0] - 1):
+                map[edge.curr.center[1]][i - 1] = " "
+
+        if(direction == SW):
+            print "!!! Southwest !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1] - 1):
+                map[i - 1][edge.curr.center[0]] = " "
+            for i in range(edge.next.center[0], edge.curr.center[0] - 1):
+                map[edge.curr.center[1]][i + 1] = " "
+
+        if(direction == SE):
+            print "!!! Southeast !!!"
+            for i in range(edge.curr.center[1], edge.next.center[1] - 1):
+                map[i + 1][edge.curr.center[0]] = " "
+            for i in range(edge.curr.center[0], edge.next.center[0] - 1):
+                map[edge.curr.center[1]][i - 1] = " "
+
+
+    print("num x girders: ", num_x_girders)
+    print("num y girders: " , num_y_girders)
+    print("x_girders: ", x_girders)
+    print("y_girders: ", y_girders)
+    y_pos = 0
+    # print
     # for i in range(0, len(map[0])):
-    #     print(i % 10, end=" ")
-    # print("", end="\n")
-    # print("", end="\n")
-    # for i in map:
-    #     print(y_pos % 10, end="  ")
-    #     for j in i:
-    #         print(j, end=" ")
-    #     print("", end="\n")
-    #     y_pos += 1
+        # print(i % 10),
+    # print
+    # print
+
+    for i in map:
+        # print(y_pos % 10),
+        for j in i:
+            print(j),
+        print
+        y_pos += 1
     # for room in rooms:
     #     print(room)
 
