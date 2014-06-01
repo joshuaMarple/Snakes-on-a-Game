@@ -28,7 +28,6 @@ class Background(Widget):
     pass
 
 
-
 class Game(Widget):
 
     player = ObjectProperty(None)
