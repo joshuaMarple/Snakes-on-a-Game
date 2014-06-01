@@ -58,6 +58,7 @@ class Game(Widget):
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
+        
     def _on_keyboard_down(self, _keyboard, keycode, text, modifiers):
         if keycode[1] == 'w':
             self.player.vel_y = 2

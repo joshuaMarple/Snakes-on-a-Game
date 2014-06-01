@@ -51,10 +51,6 @@ def generate():
                 tmp_map.append("#")
         map.append(tmp_map)
 
-
-    # for i in map:
-    #     for j in i:
-
     print "num x girders: ", num_x_girders
     print "num y girders: " , num_y_girders
     print "x_girders: ", x_girders
